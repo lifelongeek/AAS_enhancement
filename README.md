@@ -46,3 +46,52 @@ python tune_decoder.py --model_path models/librispeech_final.pth.tar --test_mani
 
 #### Pre-trained model
 The pre-trained acoustic model (librispeech_final.pth.tar) can be available in [this link](https://cnsl.kaist.ac.kr).
+
+
+### Result
+The pre-trained acoustic model combined with the LM achieves a WER of 5.7% on the test-clean of Librispech, which is competitive with DNN-HMM (5.3%, [Panayotov et al.](https://www.danielpovey.com/files/2015_icassp_librispeech.pdf))
+
+
+
+## Part 2. Speech Enhancement with Acoustic and Adversarial Supervision (AAS)
+We provide the procedure to reproduce the results of AAS tested on CHiME-4.
+
+### Installation
+
+### Usage
+
+#### Dataset: CHiME-4 (single channel track)
+
+#### Train AAS
+
+You can choose training data as simulated, real or both of them.
+
+#### Train other methods
+
+##### Spectral subtraction
+
+##### Minimizing DCE
+
+##### FSEGAN
+
+
+
+### Results
+
+#### Visualize enhanced sample
+
+#### Decoding
+
+##### with various task weight
+
+##### without enhancement
+
+##### with spectral subtraction
+
+##### with minimized DCE
+
+##### with FSEGAN
+
+##### with AAS
+
+##### with clean speech
