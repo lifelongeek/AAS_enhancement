@@ -53,6 +53,9 @@ The pre-trained acoustic model combined with the LM achieves a WER of 5.7% on th
 
 
 
+
+
+
 ## Part 2. Speech Enhancement with Acoustic and Adversarial Supervision (AAS)
 We provide the procedure to reproduce the results of AAS tested on CHiME-4.
 
