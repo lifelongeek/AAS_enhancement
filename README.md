@@ -45,7 +45,7 @@ python tune_decoder.py --model_path models/librispeech_final.pth.tar --test_mani
 ```
 
 #### Pre-trained model
-The pre-trained acoustic model (librispeech_final.pth.tar) can be available in [this link](https://cnsl.kaist.ac.kr).
+The pre-trained acoustic model (librispeech_final.pth.tar) can be available in [this link](https://drive.google.com/file/d/1lzaxGiGOgHOGEUqlwuJygkBPzkjSXG8h/view?usp=sharing).
 
 
 ### Result
