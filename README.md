@@ -91,6 +91,15 @@ You can choose training data as simulated, real or both of them.
 
 ![WERs(%) of obtained using different training data of CHiME4](./Speech_enhancement_by_AAS/assets/table3_chime_different_training_data.PNG)
 
+![CHiME4, enhancement of bus noise on simulated data](./Speech_enhancement_by_AAS/assets/generated_chime_bus.PNG)
+
+![CHiME4, enhancement of street noise on simulated data](./Speech_enhancement_by_AAS/assets/generated_chime_str.PNG)
+
+#### Decoding
+![WERs(%) of different speech enhancement methods on CHiME4-simulated test set](./Speech_enhancement_by_AAS/assets/table2_chime_simul.PNG)
+
+![WERs(%) of obtained using different training data of CHiME4](./Speech_enhancement_by_AAS/assets/table3_chime_different_training_data.PNG)
+
 ##### with various task weight
 
 ##### without enhancement
