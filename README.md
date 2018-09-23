@@ -128,5 +128,5 @@ Recurrent layer	WER (%)
 As we propose a new type of training loss, we focus on comparing different loss functions (not on comparing architectures). In this context, we did not put further effort to explore other hyper-parameters for A-E-D.
 
 ### Learning curve: Gradient norm & Loss
-![learning_curve](./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
+![learning_curve](./Speech_enhancement_by_AAS/assets/learning_curve.png)
 
