@@ -80,6 +80,9 @@ Below command train the FSEGAN with weights for adversarial loss as 0.01. This m
 python main.py --trainer FSEGAN --DB_name chime --rnn_size 500 --rnn_layers 4 --ASR_path ../AM_training/models/librispeech_final.pth.tar --w_adversarial 0.01
 ```
 
+##### Wiener filter
+The implementation for Wiener filtering method based on a priori SNR estimation is given from
+https://www.crcpress.com/downloads/K14513/K14513_CD_Files.zip
 
 ### Results
 
