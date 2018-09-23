@@ -102,5 +102,4 @@ python main.py --trainer FSEGAN --DB_name chime --rnn_size 500 --rnn_layers 4 --
 
 ![WERs(%) of obtained using different training data of CHiME4](./Speech_enhancement_by_AAS/assets/table3_chime_different_training_data.PNG)
 
-![WERs(%) with various task weight]
-(./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
+![WERs(%) with various task weight](./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
