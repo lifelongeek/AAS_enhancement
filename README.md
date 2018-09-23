@@ -1,6 +1,11 @@
 # AAS_enhancement
 This repository contains the code and supplementary result for the paper "Unpaired Speech Enhancement by Acoustic and Adversarial Supervision" (submitted to IEEE Signal Processing Letters).
 
+## Common setting
+1. Install Warp-CTC, ctcdecode (See https://github.com/SeanNaren/deepspeech.pytorch/#installation).
+2. Install kenLM (See https://github.com/kpu/kenlm) and download 4-gram trained on librispeech in [here]
+(http://www.openslr.org/resources/11/4-gram.arpa.gz)
+
 ## Part 1. Pre-train acoustic model on clean speech
 
 Code for this part is originated from https://github.com/SeanNaren/deepspeech.pytorch/.
@@ -8,9 +13,7 @@ We modify the feature from spectrogram to log-Mel filterbank output (LMFB), and 
 
 ### Installation
 1. cd AM_training
-2. Install Warp-CTC, ctcdecode (See https://github.com/SeanNaren/deepspeech.pytorch/#installation).
-3. Install kenLM (See https://github.com/kpu/kenlm) and download 4-gram trained on librispeech in [here](http://www.openslr.org/resources/11/4-gram.arpa.gz)
-4. Install other requirements by
+2. Install requirements by
 ```
 pip install -r requirements.txt
 ```
