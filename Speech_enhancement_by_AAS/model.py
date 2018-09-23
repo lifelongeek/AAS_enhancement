@@ -104,8 +104,104 @@ class BRNN(nn.Module):
             x = x.view(x.size(0), x.size(1), 2, -1).sum(2).view(x.size(0), x.size(1), -1)  # (TxNxH*2) -> (TxNxH) by sum
         return x
 
+class SpeechClassifierRNN(nn.Module):
+    def __init__(self, I, O, H, L=3, rnn_type=nn.LSTM):
+        super(SpeechClassifierRNN, self).__init__()
+        self.I = I
+        self.H = H
+        self.L = L
+
+        self.rnn1 = BRNN(input_size=H, hidden_size = H, rnn_type = rnn_type, bidirectional=True)
+        self.rnn2 = BRNN(input_size=H, hidden_size=H, rnn_type=rnn_type, bidirectional=True)
+        self.rnn3 = BRNN(input_size=H, hidden_size=H, rnn_type=rnn_type, bidirectional=True)
+
+        if(I != H):
+            self.first_linear = nn.Conv1d(I, H, kernel_size=1, stride=1, padding=0) # linear transform from dimension I to H, needed for residual connection
+        else:
+            self.first_linear = None
+
+        self.final_linear = nn.Linear(H, O)
+        self.criterion = nn.CrossEntropyLoss(size_average = False)   # nn.LogSoftmax() + nn.NLLLoss() in one single class
+
+    def forward(self, input, target):
+        #pdb.set_trace()
+        if(self.first_linear):
+            input = self.first_linear(input)
+        input = input.transpose(1,2).transpose(0,1) # Transpose: NxHxT --> TxNxH
+        h1 = self.rnn1(input) + input
+        h2 = self.rnn2(h1) + h1
+        h3 = self.rnn3(h2) + h2
+
+        # Ver1
+        #h3 = h3.transpose(0,1).transpose(1,2) # Transpose back: TxNxH --> NxHxT
+
+        # Ver2
+        h3 = h3.sum(0) # TxNxH --> NxH
+
+        output = self.final_linear(h3) # NxH --> NxO
+        loss = self.criterion(output, target)
+
+        return loss
+
+
+class BRNNmultiCH(nn.Module):
+    def __init__(self, I, H, L, nCH, mel_basis, rnn_type=nn.GRU):
+        super(BRNNmultiCH, self).__init__()
+        self.I = I
+        self.H = H
+        #self.L = L # currently, fix L=2 (implementation issue)
+        self.nCH = nCH
+        self.rnn_type = rnn_type
+        self.L = L
+
+        self.rnn1 = BRNN(input_size=H, hidden_size = H, rnn_type = rnn_type, bidirectional=True)
+        self.rnn2 = BRNN(input_size=H, hidden_size = H, rnn_type = rnn_type, bidirectional=True)
+        if (self.L == 3):
+            self.rnn3 = BRNN(input_size=H, hidden_size=H, rnn_type=rnn_type, bidirectional=True)
+        #pdb.set_trace()
+
+        self.first_linear = nn.Conv1d(I, H, kernel_size=1, stride=1, padding=0) # linear transform from dimension I to H, needed for residual connection
+        self.final_linear_real = nn.Conv1d(H, int(I/2), kernel_size=1, stride=1, padding=0) # final linear mask for real (/2 for considering only real part)
+        self.final_linear_imag = nn.Conv1d(H, int(I/2), kernel_size=1, stride=1, padding=0)  # final linear mask for imag (/2 for considering only imag part)
+
+        self.mel_basis = Variable(torch.unsqueeze(torch.FloatTensor(mel_basis).repeat(1,self.nCH),-1).cuda()) # 40x(nFFT/2+1)x1
+
+    def forward(self, input):
+        #input: (N, nCH*F*2,T) (2: real/img)
+
+        input_linear = self.first_linear(input)
+        input_linear = input_linear.transpose(1,2).transpose(0,1) # Transpose: NxHxT --> TxNxH
+
+        h1 = self.rnn1(input_linear) + input_linear
+        h2 = self.rnn2(h1) + h1
+        if(self.L == 3):
+            h3 = self.rnn3(h2) + h2
+            h = h3.transpose(0,1).transpose(1,2) # Transpose back: TxNxH --> NxHxT
+        else:
+            h = h2.transpose(0,1).transpose(1,2) # Transpose back: TxNxH --> NxHxT
+
+        mask_real = self.final_linear_real(h)
+        mask_imag = self.final_linear_imag(h)
+
+        stft = input.view(input.size(0), 2, -1, input.size(-1)) # Nx2x(CH*F)xT
+        stft_real = stft[:,0] # Nx(CH*F)xT
+        stft_imag = stft[:,1] # Nx(CH*F)xT
+
+        #pdb.set_trace()
+        enh_real = torch.mul(stft_real, mask_real)
+        enh_imag = torch.mul(stft_imag, mask_imag)
+
+        enh_power = torch.pow(enh_real, 2) + torch.pow(enh_imag, 2)
+
+        enh_mel = F.conv1d(enh_power, self.mel_basis)
+
+        output = torch.log1p(enh_mel)
+
+        return output
+
+
 class stackedBRNN(nn.Module):
-    def __init__(self, I, H, L, rnn_type=nn.LSTM):
+    def __init__(self, I, O, H, L, rnn_type=nn.LSTM):
         super(stackedBRNN, self).__init__()
         self.I = I
         self.H = H
@@ -118,7 +214,7 @@ class stackedBRNN(nn.Module):
         self.rnn4 = BRNN(input_size=H, hidden_size=H, rnn_type=rnn_type, bidirectional=True)
 
         self.first_linear = nn.Conv1d(I, H, kernel_size=1, stride=1, padding=0) # linear transform from dimension I to H, needed for residual connection
-        self.final_linear = nn.Conv1d(H, I, kernel_size=1, stride=1, padding=0) # linear transform from dimension H to I, needed for final output as logMel spectrogram
+        self.final_linear = nn.Conv1d(H, O, kernel_size=1, stride=1, padding=0) # linear transform from dimension H to I, needed for final output as logMel spectrogram
 
     def forward(self, input):
         #pdb.set_trace()
@@ -134,45 +230,27 @@ class stackedBRNN(nn.Module):
 
         return output
 
+    def forward_paired(self, input, paired):
 
-class Lookahead(nn.Module):
-    # Wang et al 2016 - Lookahead Convolution Layer for Unidirectional Recurrent Neural Networks
-    # input shape - sequence, batch, feature - TxNxH
-    # output shape - same as input
-    def __init__(self, n_features, context):
-        # should we handle batch_first=True?
-        super(Lookahead, self).__init__()
-        self.n_features = n_features
-        self.weight = Parameter(torch.Tensor(n_features, context + 1))
-        assert context > 0
-        self.context = context
-        self.register_parameter('bias', None)
-        self.init_parameters()
+        input = torch.cat((input, paired), dim=1)
+        output = self.forward(input)
 
-    def init_parameters(self):  # what's a better way initialiase this layer?
-        stdv = 1. / math.sqrt(self.weight.size(1))
-        self.weight.data.uniform_(-stdv, stdv)
+        return output
 
-    def forward(self, input):
-        seq_len = input.size(0)
-        # pad the 0th dimension (T/sequence) with zeroes whose number = context
-        # Once pytorch's padding functions have settled, should move to those.
-        padding = torch.zeros(self.context, *(input.size()[1:])).type_as(input.data)
-        x = torch.cat((input, Variable(padding)), 0)
+    def forward_with_intermediate_output(self, input):
+        #pdb.set_trace()
+        input_linear = self.first_linear(input)
+        input_linear = input_linear.transpose(1,2).transpose(0,1) # Transpose: NxHxT --> TxNxH
+        h1 = self.rnn1(input_linear) + input_linear
+        h2 = self.rnn2(h1) + h1
+        h3 = self.rnn3(h2) + h2
+        h4 = self.rnn4(h3) + h3
+        h4 = h4.transpose(0,1).transpose(1,2) # Transpose back: TxNxH --> NxHxT
+        #pdb.set_trace()
+        output = self.final_linear(h4)
 
-        # add lookahead windows (with context+1 width) as a fourth dimension
-        # for each seq-batch-feature combination
-        x = [x[i:i + self.context + 1] for i in range(seq_len)]  # TxLxNxH - sequence, context, batch, feature
-        x = torch.stack(x)
-        x = x.permute(0, 2, 3, 1)  # TxNxHxL - sequence, batch, feature, context
+        return [output, h4]
 
-        x = torch.mul(x, self.weight).sum(dim=3)
-        return x
-
-    def __repr__(self):
-        return self.__class__.__name__ + '(' \
-               + 'n_features=' + str(self.n_features) \
-               + ', context=' + str(self.context) + ')'
 
 
 class DeepSpeech(nn.Module):
@@ -246,8 +324,8 @@ class DeepSpeech(nn.Module):
 
     def forward(self, x):
         x = self.conv(x)
-        x = x.transpose(1, 2).transpose(0, 1).contiguous()  # TxNxH
-        #x = x.transpose(1,2).transpose(0,1)
+        #x = x.transpose(1, 2).transpose(0, 1).contiguous()  # TxNxH
+        x = x.transpose(1,2).transpose(0,1)
         x = self.rnns(x)
         x = self.fc(x)
         x = x.transpose(0, 1)
