@@ -101,3 +101,32 @@ https://www.crcpress.com/downloads/K14513/K14513_CD_Files.zip
 
 ##### on various task weight
 ![WERs(%) with various task weight](./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
+
+
+## Supplementary result
+
+### Parametrization of A-E-D
+For the acoustic model (A), we slightly modify the architecture in (D. Amodei et al., 2016) by changing the speech feature from linear spectrogram to mel-spectrogram and 2D convolution to 1D convolution.
+It is still an open problem wherein neural network architecture can effectively extract target voice from noisy speech under various types of noise and reverberation. Therefore, for the enhancement model (E), we tested several architectures (e.g., convolutional encoder-decoder or recurrent neural networks) and selected the best model in terms of performance. Our final E model is a stacked bidirectional recurrent neural network, including skip connections between layers. Using a bi-RNN is natural to handle sequential data and adding skip connections improves the convergence of deep neural networks.
+We choose the same architecture of the discriminator model (D) as in the enhancement model (E) as both models need to generate log-mel filterbank feature given a log-mel filterbank feature input. Note that the discriminator needs to auto-encode the clean speech feature while avoiding auto-encoding the enhanced speech feature under the boundary equilibrium GAN setting, as shown in equation (5). 
+
+### Hyperparameter selection for A-E-D
+Hyperparameters are selected based on the WER evaluated on validation data. The WERs are measured by comparing the reference transcription and the decoding output produced by greedy decoding (without the language model).
+Hyperparameter for A (WER measured on Librispeech validation set)
+Convolutional layer	Recurrent layer	WER (%)
+#layer=1, #map=100, width=5, #subsample=1	#layer=4, #hidden= 800	20.1
+#layer=1, #map=100, width=5, #subsample=1	#layer=5, #hidden= 1000	19.0
+#layer=1, #map=200, width=5, #subsample=1	#layer=6, #hidden= 1200	20.2
+#layer=2, #map=200, width=5, #subsample=1	#layer=5, #hidden= 1000	14.5
+#layer=2, #map=200, width=5, #subsample=1	#layer=6, #hidden= 1200	17.8.
+
+Hyperparameter for E&D (WER measured on Librispeech + DEMAND validation set)
+Recurrent layer	WER (%)
+#layer=3, #hidden=400	29.0
+#layer=4, #hidden=500	27.9
+#layer=5, #hidden=600	28.6
+As we propose a new type of training loss, we focus on comparing different loss functions (not on comparing architectures). In this context, we did not put further effort to explore other hyper-parameters for A-E-D.
+
+### Learning curve: Gradient norm & Loss
+![learning_curve](./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
+
