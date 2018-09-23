@@ -80,6 +80,9 @@ Below command train the FSEGAN with weights for adversarial loss as 0.01. This m
 python main.py --trainer FSEGAN --DB_name chime --rnn_size 500 --rnn_layers 4 --ASR_path ../AM_training/models/librispeech_final.pth.tar --w_adversarial 0.01
 ```
 
+##### Wiener filter
+The implementation for Wiener filtering method based on a priori SNR estimation is given from
+https://www.crcpress.com/downloads/K14513/K14513_CD_Files.zip
 
 ### Results
 
@@ -88,30 +91,13 @@ python main.py --trainer FSEGAN --DB_name chime --rnn_size 500 --rnn_layers 4 --
 
 ![CHiME4, enhancement of street noise on simulated data](./Speech_enhancement_by_AAS/assets/generated_chime_str.PNG)
 
-#### Decoding
-![WERs(%) of different speech enhancement methods on CHiME4-simulated test set](./Speech_enhancement_by_AAS/assets/table2_chime_simul.PNG)
-
-![WERs(%) of obtained using different training data of CHiME4](./Speech_enhancement_by_AAS/assets/table3_chime_different_training_data.PNG)
-
-![CHiME4, enhancement of bus noise on simulated data](./Speech_enhancement_by_AAS/assets/generated_chime_bus.PNG)
-
-![CHiME4, enhancement of street noise on simulated data](./Speech_enhancement_by_AAS/assets/generated_chime_str.PNG)
 
 #### Decoding
+##### on CHiME-4 simulated test set
 ![WERs(%) of different speech enhancement methods on CHiME4-simulated test set](./Speech_enhancement_by_AAS/assets/table2_chime_simul.PNG)
 
+##### on CHiME-4, with different training data
 ![WERs(%) of obtained using different training data of CHiME4](./Speech_enhancement_by_AAS/assets/table3_chime_different_training_data.PNG)
 
-##### with various task weight
-
-##### without enhancement
-
-##### with spectral subtraction
-
-##### with minimized DCE
-
-##### with FSEGAN
-
-##### with AAS
-
-##### with clean speech
+##### on various task weight
+![WERs(%) with various task weight](./Speech_enhancement_by_AAS/assets/fig4_wer_per_task_weight.png)
