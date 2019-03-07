@@ -66,6 +66,13 @@ Below command train the speech enhancement model with AAS. The speech enhancer (
 python main.py --trainer AAS --DB_name chime --rnn_size 500 --rnn_layers 4 --ASR_path ../AM_training/models/librispeech_final.pth.tar  --w_adversarial 100000
 ```
 
+#### Test AAS
+You can add --mode test --load_path PATH_TO_PRETRAINED_MODEL to training script. For example, 
+```
+python main.py --trainer AAS --DB_name chime --rnn_size 500 --rnn_layers 4 --ASR_path ../AM_training/models/librispeech_final.pth.tar --mode test --load_path /data/kenkim/AAS_enhancement/model.pth.tar 
+```
+
+
 #### Train other methods
 
 ##### Minimizing DCE
