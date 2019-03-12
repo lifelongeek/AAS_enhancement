@@ -1,5 +1,5 @@
 # AAS_enhancement
-This repository contains the code and supplementary result for the paper "Unpaired Speech Enhancement by Acoustic and Adversarial Supervision" (submitted to IEEE Signal Processing Letters).
+This repository contains the code and supplementary result for the paper "Unpaired Speech Enhancement by Acoustic and Adversarial Supervision" (IEEE Signal Processing Letters, 2019).
 
 paper available at https://arxiv.org/abs/1811.02182
 
