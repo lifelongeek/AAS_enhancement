@@ -1,6 +1,9 @@
 # AAS_enhancement
 This repository contains the code and supplementary result for the paper "Unpaired Speech Enhancement by Acoustic and Adversarial Supervision" (submitted to IEEE Signal Processing Letters).
 
+paper available at https://arxiv.org/abs/1811.02182
+
+
 ## Common setting
 1. Install Warp-CTC, ctcdecode (See https://github.com/SeanNaren/deepspeech.pytorch/#installation).
 2. Install kenLM (See https://github.com/kpu/kenlm) and download 4-gram trained on librispeech in [here]
