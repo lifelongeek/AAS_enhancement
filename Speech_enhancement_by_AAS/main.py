@@ -18,6 +18,9 @@ def main(config):
     elif(config.trainer == 'AAS'):
         from trainer_AAS import Trainer
         paired = False
+    elif(config.trainer == 'FSEGAN'):
+        from trainer_FSEGAN import Trainer
+        paired = True
     #elif(config.trainer == 'AE'): # this mode is provided for data sanity check
 #        from trainer_AE import Trainer
 #        paired = True
