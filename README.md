@@ -78,8 +78,8 @@ You can add --mode test --load_path PATH_TO_PRETRAINED_MODEL to training script.
 python main.py --trainer AAS --DB_name chime --rnn_size 500 --rnn_layers 4 --ASR_path ../AM_training/models/librispeech_final.pth.tar --mode test --load_path /data/kenkim/AAS_enhancement/model.pth.tar 
 ```
 
-Pre-trained model is available in [here].
-(https://drive.google.com/file/d/1fBOgnKoFHnOG5HXS6RYVkN2XbPrzf510/view?usp=sharing)
+Pre-trained model is available in [this link]
+(https://drive.google.com/file/d/1lzaxGiGOgHOGEUqlwuJygkBPzkjSXG8h/view?usp=sharing)/
 
 #### Train other methods
 
